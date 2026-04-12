@@ -1,8 +1,8 @@
 replicaCount: 1
 
 image:
-  repository: 899631475351.dkr.ecr.us-east-2.amazonaws.com/ai-inference-service
-  tag: "2bc810fd9de49edd060def0f003866d2431eadbe"
+  repository: ai-inference-service
+  tag: latest
   pullPolicy: IfNotPresent
 
 service:
