@@ -1,19 +1,15 @@
 replicaCount: 1
-
 image:
   repository: 899631475351.dkr.ecr.us-east-2.amazonaws.com/ai-inference-service
-  tag: "2bc810fd9de49edd060def0f003866d2431eadbe"
+  tag: "9cf2b7a2282c073fa9d0307fa1bf523f2eac2ea2"
   pullPolicy: IfNotPresent
-
 service:
   type: ClusterIP
   port: 8001
   targetPort: 8001
-
 env:
   LOG_LEVEL: "info"
   MODEL_NAME: "stub-model"
-
 resources:
   requests:
     cpu: "250m"
@@ -21,12 +17,10 @@ resources:
   limits:
     cpu: "500m"
     memory: "512Mi"
-
 readinessProbe:
   path: /health
   initialDelaySeconds: 5
   periodSeconds: 10
-
 livenessProbe:
   path: /health
   initialDelaySeconds: 10
