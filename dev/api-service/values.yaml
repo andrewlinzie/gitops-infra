@@ -1,7 +1,7 @@
 replicaCount: 1
 image:
   repository: 899631475351.dkr.ecr.us-east-2.amazonaws.com/api-service
-  tag: "75fca5f6c3ef95b582b82ed50f4610ed27f70363"
+  tag: "cf36350481d421a31e2f5ae6edb5d75d10f51644"
   pullPolicy: IfNotPresent
 service:
   type: ClusterIP
