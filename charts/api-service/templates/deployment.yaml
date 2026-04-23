@@ -3,7 +3,9 @@ kind: Deployment
 metadata:
   name: {{ include "api-service.fullname" . }}
 spec:
+  {{- if not .Values.hpa.enabled }}
   replicas: {{ .Values.replicaCount }}
+  {{- end }}
   selector:
     matchLabels:
       app: {{ include "api-service.name" . }}
