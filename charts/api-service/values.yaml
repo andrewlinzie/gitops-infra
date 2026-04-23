@@ -31,3 +31,10 @@ livenessProbe:
   path: /health
   initialDelaySeconds: 10
   periodSeconds: 15
+
+hpa:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  cpu:
+    averageUtilization: 70
