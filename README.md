@@ -14,33 +14,84 @@ Application repositories:
 - publish images to ECR
 
 This repository:
-- defines which version (image tag) runs in each environment
+- defines the full deployment configuration for each service in each environment, including:
+  - image version (tag)
+  - replica counts
+  - resource requests/limits
+  - health probes
+  - environment variables
+  - autoscaling (HPA)
+
+Image tag updates are the primary mechanism for promotion across environments.
 
 ```
-
-CI → pushes image → updates GitOps repo → (Argo CD sync later)
-
+CI -> pushes image -> updates GitOps repo -> ArgoCD detects change -> deploys to cluster
 ```
+---
+
+## Deployment Model (Helm + ArgoCD)
+
+This repository uses a Helm-based GitOps model:
+
+- `charts/`
+  - Contains reusable Helm charts for each service
+- `dev/`, `staging/`, `prod/`
+  - Provide environment-specific values for each service
+- `argocd/`
+  - Defines ArgoCD Application manifests per service and environment
+
+ArgoCD deploys services by:
+- referencing the Helm chart
+- applying the environment-specific values file
+
+---
+
+## Role in GitOps Deployment
+
+This repository is continuously monitored by ArgoCD.
+
+ArgoCD:
+- Uses Application manifests defined in `argocd/`
+- References Helm charts from `charts/`
+- Applies environment-specific values from `dev/`, `staging/`, and `prod/`
+- Reconciles the Kubernetes cluster to match the desired state in Git
+
+This enables a pull-based deployment model where:
+- Git defines the desired state
+- ArgoCD ensures the cluster matches that state
 
 ---
 
 ## Repository Structure
 
 ```
-
 gitops-infra/
+├── argocd/
+│   ├── dev-api-service.yaml
+│   ├── dev-ai-inference-service.yaml
+│   ├── staging-api-service.yaml
+│   ├── staging-ai-inference-service.yaml
+│   ├── prod-api-service.yaml
+│   └── prod-ai-inference-service.yaml
+├── charts/
+│   ├── api-service/
+│   └── ai-inference-service/
 ├── dev/
-│   └── api-service/
+│   ├── api-service/
+│   │   └── values.yaml
+│   └── ai-inference-service/
 │       └── values.yaml
 ├── staging/
-│   └── api-service/
+│   ├── api-service/
+│   │   └── values.yaml
+│   └── ai-inference-service/
 │       └── values.yaml
 ├── prod/
-│   └── api-service/
+│   ├── api-service/
+│   │   └── values.yaml
+│   └── ai-inference-service/
 │       └── values.yaml
-├── argocd/ (future use)
 └── README.md
-
 ````
 
 ---
@@ -69,12 +120,28 @@ gitops-infra/
 Each service defines its deployment state via:
 
 ```yaml
+
+replicaCount: 3
+
 image:
   repository: <ecr-repo>
   tag: <git-sha>
-````
 
-Only the `tag` changes across promotions.
+resources:
+  requests:
+  limits:
+
+readinessProbe:
+livenessProbe:
+
+env:
+
+hpa:
+  enabled: true
+
+```
+
+Only the image `tag` changes across promotions. Other configuration values remain environment-specific.
 
 ---
 
@@ -118,7 +185,7 @@ Each commit represents a deployment event.
 * Environment-specific deployment state
 * Image tag references
 * Helm values overrides
-* Future Argo CD configuration
+* ArgoCD Application manifests
 
 ---
 
@@ -136,7 +203,6 @@ Each commit represents a deployment event.
 
 * Git as the source of truth for deployment state
 * Strict separation of:
-
   * build (service repos)
   * deployment state (GitOps repo)
 * Immutable artifact promotion across environments
@@ -144,18 +210,18 @@ Each commit represents a deployment event.
 
 ---
 
-## Current State (Phase 5)
+## Current State
 
-* Dev auto-update pipeline working
-* Staging manual promotion working
-* Prod promotion workflow implemented
-* Argo CD NOT yet integrated
+- Dev environment auto-updates via CI pipeline
+- Staging and prod promotion workflows are manual
+- ArgoCD is integrated and continuously reconciles this repository into the EKS cluster
+- Each commit to this repository represents a deployment event
 
 ---
 
-## Future Phases
+## Future Enhancements
 
-* Argo CD installation and configuration
-* Automatic reconciliation from Git to cluster
-* Rollback via Git history
-* Multi-service GitOps management
+- Multi-service GitOps standardization and templating
+- Policy enforcement and validation (e.g., preventing invalid promotions)
+- Enhanced promotion workflows across environments
+- Integration with observability and alerting systems
