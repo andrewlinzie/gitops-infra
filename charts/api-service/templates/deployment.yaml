@@ -13,6 +13,10 @@ spec:
     metadata:
       labels:
         app: {{ include "api-service.name" . }}
+      annotations:
+        prometheus.io/scrape: {{ .Values.metrics.enabled | quote }}
+        prometheus.io/path: {{ .Values.metrics.path | quote }}
+        prometheus.io/port: {{ .Values.metrics.port | quote }}
     spec:
       containers:
         - name: api-service

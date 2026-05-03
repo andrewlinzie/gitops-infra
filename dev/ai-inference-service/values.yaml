@@ -7,6 +7,12 @@ service:
   type: ClusterIP
   port: 8001
   targetPort: 8001
+
+metrics:
+  enabled: "true"
+  path: "/metrics"
+  port: "8001"
+
 env:
   LOG_LEVEL: "info"
   MODEL_NAME: "stub-model"

@@ -13,6 +13,10 @@ spec:
     metadata:
       labels:
         app: {{ include "ai-inference-service.name" . }}
+      annotations:
+        prometheus.io/scrape: {{ .Values.metrics.enabled | quote }}
+        prometheus.io/path: {{ .Values.metrics.path | quote }}
+        prometheus.io/port: {{ .Values.metrics.port | quote }}
     spec:
       containers:
         - name: ai-inference-service

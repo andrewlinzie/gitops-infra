@@ -10,6 +10,11 @@ service:
   port: 8000
   targetPort: 8000
 
+metrics:
+  enabled: "true"
+  path: "/metrics"
+  port: "8000"
+
 env:
   AI_SERVICE_URL: "http://ai-inference-service:8001"
   LOG_LEVEL: "info"
