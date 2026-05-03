@@ -1,19 +1,15 @@
 replicaCount: 1
-
 image:
   repository: 899631475351.dkr.ecr.us-east-2.amazonaws.com/api-service
-  tag: "f56f66c61ca248f9be1213e48e6a564ae1385324"
+  tag: "31726869c2210238468393b69a6c267c8f29534f"
   pullPolicy: IfNotPresent
-
 service:
   type: ClusterIP
   port: 8000
   targetPort: 8000
-
 env:
   AI_SERVICE_URL: "http://ai-inference-service:8001"
   LOG_LEVEL: "info"
-
 resources:
   requests:
     cpu: "100m"
@@ -21,17 +17,14 @@ resources:
   limits:
     cpu: "250m"
     memory: "256Mi"
-
 readinessProbe:
   path: /health
   initialDelaySeconds: 5
   periodSeconds: 10
-
 livenessProbe:
   path: /health
   initialDelaySeconds: 10
   periodSeconds: 15
-
 hpa:
   enabled: true
   minReplicas: 1
