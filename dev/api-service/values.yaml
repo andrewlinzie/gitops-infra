@@ -1,18 +1,16 @@
 replicaCount: 1
 image:
   repository: 899631475351.dkr.ecr.us-east-2.amazonaws.com/api-service
-  tag: "31726869c2210238468393b69a6c267c8f29534f"
+  tag: "18c79bf5fdadbdd520a0ec684e2da5c3ad37ef86"
   pullPolicy: IfNotPresent
 service:
   type: ClusterIP
   port: 8000
   targetPort: 8000
-
 metrics:
   enabled: "true"
   path: "/metrics"
   port: "8000"
-
 env:
   AI_SERVICE_URL: "http://ai-inference-service:8001"
   LOG_LEVEL: "info"
