@@ -1,18 +1,16 @@
 replicaCount: 1
 image:
   repository: 899631475351.dkr.ecr.us-east-2.amazonaws.com/ai-inference-service
-  tag: "c677fe3f289dbc3506b72b56369a8b6ad90e1268"
+  tag: "dc46c8bdf9fde985616c7a0d41571f2871f27a66"
   pullPolicy: IfNotPresent
 service:
   type: ClusterIP
   port: 8001
   targetPort: 8001
-
 metrics:
   enabled: "true"
   path: "/metrics"
   port: "8001"
-
 env:
   LOG_LEVEL: "info"
   MODEL_NAME: "stub-model"
