@@ -224,4 +224,34 @@ Each commit represents a deployment event.
 - Multi-service GitOps standardization and templating
 - Policy enforcement and validation (e.g., preventing invalid promotions)
 - Enhanced promotion workflows across environments
-- Integration with observability and alerting systems
+
+---
+
+## Observability Integration
+
+This repository now includes observability configuration as part of the GitOps model.
+
+### Components
+
+- Prometheus (Helm deployment via ArgoCD)
+- Grafana dashboards
+- Prometheus alert rules (`PrometheusRule` resources)
+
+### Key Principle
+
+Observability is managed through GitOps:
+
+- No manual `kubectl` configuration
+- All monitoring and alerting configuration is version-controlled
+- ArgoCD continuously reconciles observability state into the cluster
+
+### Structure
+
+```
+observability/
+├── prometheus/
+├── grafana/
+└── alerts/
+```
+
+This ensures monitoring, alerting, and dashboards are treated as part of the platform, not external tooling.
