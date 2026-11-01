@@ -56,6 +56,8 @@ backendStore:
     passwordKey: password
 
 artifactRoot:
+  # The laptop sends files to the tracking server. The pod role writes s3://…/mlflow/.
+  proxiedArtifactStorage: true
   s3:
     enabled: true
     bucket: ai-cloud-platform-899631475351-dvc
