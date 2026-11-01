@@ -9,7 +9,31 @@ service:
   type: ClusterIP
 
 ingress:
-  enabled: false
+  enabled: true
+  className: alb
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}]'
+    alb.ingress.kubernetes.io/security-groups: sg-0e423234ad0ce785a
+    alb.ingress.kubernetes.io/manage-backend-security-group-rules: "true"
+    alb.ingress.kubernetes.io/healthcheck-path: /health
+    alb.ingress.kubernetes.io/healthcheck-protocol: HTTP
+    alb.ingress.kubernetes.io/success-codes: "200"
+  hosts:
+    - host: ""
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+# No domain yet. The ALB DNS name is the Host header, and it does not exist until the balancer does.
+# A single "*" is the chart's override for that. The security group is the network gate.
+serverAllowedHosts:
+  - "*"
+
+corsAllowedOrigins:
+  - "*"
 
 serviceAccount:
   create: true
