@@ -39,6 +39,7 @@ artifactRoot:
 
 auth:
   enabled: true
+  sqliteFullPath: /tmp
   existingAdminSecret:
     name: mlflow-admin
     usernameKey: username
