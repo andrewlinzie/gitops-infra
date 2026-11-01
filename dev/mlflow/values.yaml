@@ -1,0 +1,58 @@
+fullnameOverride: mlflow
+
+replicaCount: 1
+
+telemetry:
+  enabled: false
+
+service:
+  type: ClusterIP
+
+ingress:
+  enabled: false
+
+serviceAccount:
+  create: true
+  name: mlflow
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::899631475351:role/ai-cloud-platform-dev-mlflow
+
+backendStore:
+  databaseMigration: true
+  databaseConnectionCheck: true
+  postgres:
+    enabled: true
+    host: ai-cloud-platform-dev-mlflow.c1egy0ak63vw.us-east-2.rds.amazonaws.com
+    port: 5432
+    database: mlflow
+    driver: psycopg2
+  existingDatabaseSecret:
+    name: mlflow-db
+    usernameKey: username
+    passwordKey: password
+
+artifactRoot:
+  s3:
+    enabled: true
+    bucket: ai-cloud-platform-899631475351-dvc
+    path: mlflow
+
+auth:
+  enabled: true
+  existingAdminSecret:
+    name: mlflow-admin
+    usernameKey: username
+    passwordKey: password
+  postgres:
+    enabled: false
+
+postgresql:
+  enabled: false
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 512Mi
+  limits:
+    cpu: 500m
+    memory: 1Gi
