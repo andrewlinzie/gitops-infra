@@ -1,0 +1,24 @@
+clusterName: ai-cloud-platform-dev-eks
+region: us-east-2
+
+vpcId: vpc-01acd97537642d16e
+
+replicaCount: 1
+
+# Empty means the controller's own default, which is an internal balancer.
+# MLflow's Ingress sets internet-facing on itself. A missing annotation must not publish a new app.
+defaultTargetType: ip
+
+serviceAccount:
+  create: true
+  name: aws-load-balancer-controller
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::899631475351:role/ai-cloud-platform-dev-alb-controller
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
