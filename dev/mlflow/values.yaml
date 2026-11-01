@@ -50,6 +50,9 @@ auth:
 postgresql:
   enabled: false
 
+extraArgs:
+  workers: "1"
+
 resources:
   requests:
     cpu: 100m
