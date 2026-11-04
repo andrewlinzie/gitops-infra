@@ -1,7 +1,7 @@
 replicaCount: 1
 image:
   repository: 899631475351.dkr.ecr.us-east-2.amazonaws.com/ai-inference-service
-  tag: "6db60c6b7bb1bbdd1ceea3eaaffe9e40e0dcb3ab"
+  tag: "7898866f7385d833c3e6f55b74cc1b9f36ab27cd"
   pullPolicy: IfNotPresent
 service:
   type: ClusterIP
@@ -26,7 +26,7 @@ readinessProbe:
   initialDelaySeconds: 5
   periodSeconds: 10
 livenessProbe:
-  path: /health
+  path: /live
   initialDelaySeconds: 10
   periodSeconds: 15
 hpa:
@@ -35,3 +35,7 @@ hpa:
   maxReplicas: 3
   memory:
     averageUtilization: 70
+model:
+  version: fraud-logreg-s42-5f3c0fdb-auc0p848060
+  registryVersion: "1"
+  runId: 5cfb5967397d4a5daf3fdccb4b1245aa
