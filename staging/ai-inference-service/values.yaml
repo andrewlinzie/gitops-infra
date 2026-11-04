@@ -28,7 +28,7 @@ readinessProbe:
   periodSeconds: 10
 
 livenessProbe:
-  path: /health
+  path: /live
   initialDelaySeconds: 10
   periodSeconds: 15
 

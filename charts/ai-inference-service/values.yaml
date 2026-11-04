@@ -19,6 +19,12 @@ env:
   LOG_LEVEL: "info"
   MODEL_NAME: "stub-model"
 
+# Readable record beside image.tag. CI fills the environment files. The pod does not read these.
+model:
+  version: ""
+  registryVersion: ""
+  runId: ""
+
 resources:
   requests:
     cpu: "250m"
@@ -33,7 +39,7 @@ readinessProbe:
   periodSeconds: 10
 
 livenessProbe:
-  path: /health
+  path: /live
   initialDelaySeconds: 10
   periodSeconds: 15
 
