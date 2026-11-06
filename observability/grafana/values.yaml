@@ -13,8 +13,540 @@ datasources:
     apiVersion: 1
     datasources:
       - name: Prometheus
+        uid: Prometheus
         type: prometheus
         access: proxy
         url: http://dev-prometheus-server.monitoring.svc.cluster.local
         isDefault: true
-        
+
+dashboardProviders:
+  dashboardproviders.yaml:
+    apiVersion: 1
+    providers:
+      - name: default
+        orgId: 1
+        folder: ""
+        type: file
+        disableDeletion: false
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards/default
+
+dashboards:
+  default:
+    model-quality:
+      json: |
+        {
+          "uid": "model-quality",
+          "title": "Model quality",
+          "tags": [
+            "model"
+          ],
+          "timezone": "browser",
+          "schemaVersion": 39,
+          "version": 1,
+          "refresh": "30s",
+          "time": {
+            "from": "now-6h",
+            "to": "now"
+          },
+          "panels": [
+            {
+              "id": 1,
+              "type": "stat",
+              "title": "Validation roc_auc from the package",
+              "gridPos": {
+                "h": 5,
+                "w": 6,
+                "x": 0,
+                "y": 0
+              },
+              "datasource": {
+                "type": "prometheus",
+                "uid": "Prometheus"
+              },
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "Prometheus"
+                  },
+                  "expr": "model_training_roc_auc",
+                  "legendFormat": "{{model_version}}",
+                  "refId": "A"
+                }
+              ],
+              "fieldConfig": {
+                "defaults": {
+                  "decimals": 6,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "blue",
+                        "value": null
+                      }
+                    ]
+                  }
+                },
+                "overrides": []
+              },
+              "options": {
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "orientation": "auto",
+                "textMode": "value_and_name",
+                "colorMode": "value",
+                "graphMode": "none",
+                "justifyMode": "auto"
+              }
+            },
+            {
+              "id": 2,
+              "type": "timeseries",
+              "title": "Score p50",
+              "gridPos": {
+                "h": 5,
+                "w": 9,
+                "x": 6,
+                "y": 0
+              },
+              "datasource": {
+                "type": "prometheus",
+                "uid": "Prometheus"
+              },
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "Prometheus"
+                  },
+                  "expr": "histogram_quantile(0.50, sum by (le, model_version) (rate(inference_score_bucket[15m])))",
+                  "legendFormat": "{{model_version}}",
+                  "refId": "A"
+                }
+              ],
+              "fieldConfig": {
+                "defaults": {
+                  "custom": {
+                    "drawStyle": "line",
+                    "lineWidth": 1,
+                    "fillOpacity": 10,
+                    "showPoints": "auto",
+                    "spanNulls": false,
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": null
+                      }
+                    ]
+                  }
+                },
+                "overrides": []
+              },
+              "options": {
+                "legend": {
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true,
+                  "calcs": []
+                },
+                "tooltip": {
+                  "mode": "single",
+                  "sort": "none"
+                }
+              }
+            },
+            {
+              "id": 3,
+              "type": "timeseries",
+              "title": "Predicted fraud rate",
+              "gridPos": {
+                "h": 5,
+                "w": 9,
+                "x": 15,
+                "y": 0
+              },
+              "datasource": {
+                "type": "prometheus",
+                "uid": "Prometheus"
+              },
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "Prometheus"
+                  },
+                  "expr": "sum by (model_version) (rate(inference_predictions_total{is_fraud=\"1\"}[15m])) / sum by (model_version) (rate(inference_predictions_total[15m]))",
+                  "legendFormat": "{{model_version}}",
+                  "refId": "A"
+                }
+              ],
+              "fieldConfig": {
+                "defaults": {
+                  "custom": {
+                    "drawStyle": "line",
+                    "lineWidth": 1,
+                    "fillOpacity": 10,
+                    "showPoints": "auto",
+                    "spanNulls": false,
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": null
+                      }
+                    ]
+                  }
+                },
+                "overrides": []
+              },
+              "options": {
+                "legend": {
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true,
+                  "calcs": []
+                },
+                "tooltip": {
+                  "mode": "single",
+                  "sort": "none"
+                }
+              }
+            },
+            {
+              "id": 4,
+              "type": "timeseries",
+              "title": "Feature PSI",
+              "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 0,
+                "y": 5
+              },
+              "datasource": {
+                "type": "prometheus",
+                "uid": "Prometheus"
+              },
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "Prometheus"
+                  },
+                  "expr": "model_feature_psi",
+                  "legendFormat": "{{model_version}} / {{feature}}",
+                  "refId": "A"
+                }
+              ],
+              "fieldConfig": {
+                "defaults": {
+                  "custom": {
+                    "drawStyle": "line",
+                    "lineWidth": 1,
+                    "fillOpacity": 10,
+                    "showPoints": "auto",
+                    "spanNulls": false,
+                    "thresholdsStyle": {
+                      "mode": "line"
+                    }
+                  },
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": null
+                      },
+                      {
+                        "color": "red",
+                        "value": 0.25
+                      }
+                    ]
+                  }
+                },
+                "overrides": []
+              },
+              "options": {
+                "legend": {
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true,
+                  "calcs": []
+                },
+                "tooltip": {
+                  "mode": "single",
+                  "sort": "none"
+                }
+              }
+            },
+            {
+              "id": 5,
+              "type": "timeseries",
+              "title": "Score PSI",
+              "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 5
+              },
+              "datasource": {
+                "type": "prometheus",
+                "uid": "Prometheus"
+              },
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "Prometheus"
+                  },
+                  "expr": "model_score_psi",
+                  "legendFormat": "{{model_version}}",
+                  "refId": "A"
+                }
+              ],
+              "fieldConfig": {
+                "defaults": {
+                  "custom": {
+                    "drawStyle": "line",
+                    "lineWidth": 1,
+                    "fillOpacity": 10,
+                    "showPoints": "auto",
+                    "spanNulls": false,
+                    "thresholdsStyle": {
+                      "mode": "line"
+                    }
+                  },
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": null
+                      },
+                      {
+                        "color": "red",
+                        "value": 0.25
+                      }
+                    ]
+                  }
+                },
+                "overrides": []
+              },
+              "options": {
+                "legend": {
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true,
+                  "calcs": []
+                },
+                "tooltip": {
+                  "mode": "single",
+                  "sort": "none"
+                }
+              }
+            },
+            {
+              "id": 6,
+              "type": "timeseries",
+              "title": "Samples in the report",
+              "gridPos": {
+                "h": 7,
+                "w": 8,
+                "x": 0,
+                "y": 13
+              },
+              "datasource": {
+                "type": "prometheus",
+                "uid": "Prometheus"
+              },
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "Prometheus"
+                  },
+                  "expr": "model_drift_sample_count",
+                  "legendFormat": "{{model_version}}",
+                  "refId": "A"
+                }
+              ],
+              "fieldConfig": {
+                "defaults": {
+                  "custom": {
+                    "drawStyle": "line",
+                    "lineWidth": 1,
+                    "fillOpacity": 10,
+                    "showPoints": "auto",
+                    "spanNulls": false,
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": null
+                      }
+                    ]
+                  }
+                },
+                "overrides": []
+              },
+              "options": {
+                "legend": {
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true,
+                  "calcs": []
+                },
+                "tooltip": {
+                  "mode": "single",
+                  "sort": "none"
+                }
+              }
+            },
+            {
+              "id": 7,
+              "type": "timeseries",
+              "title": "Report age",
+              "gridPos": {
+                "h": 7,
+                "w": 8,
+                "x": 8,
+                "y": 13
+              },
+              "datasource": {
+                "type": "prometheus",
+                "uid": "Prometheus"
+              },
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "Prometheus"
+                  },
+                  "expr": "model_drift_report_age_seconds",
+                  "legendFormat": "{{model_version}}",
+                  "refId": "A"
+                }
+              ],
+              "fieldConfig": {
+                "defaults": {
+                  "custom": {
+                    "drawStyle": "line",
+                    "lineWidth": 1,
+                    "fillOpacity": 10,
+                    "showPoints": "auto",
+                    "spanNulls": false,
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": null
+                      }
+                    ]
+                  }
+                },
+                "overrides": []
+              },
+              "options": {
+                "legend": {
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true,
+                  "calcs": []
+                },
+                "tooltip": {
+                  "mode": "single",
+                  "sort": "none"
+                }
+              }
+            },
+            {
+              "id": 8,
+              "type": "timeseries",
+              "title": "Score latency p95",
+              "gridPos": {
+                "h": 7,
+                "w": 8,
+                "x": 16,
+                "y": 13
+              },
+              "datasource": {
+                "type": "prometheus",
+                "uid": "Prometheus"
+              },
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "Prometheus"
+                  },
+                  "expr": "histogram_quantile(0.95, sum by (le, model_version) (rate(model_processing_time_seconds_bucket[5m])))",
+                  "legendFormat": "{{model_version}}",
+                  "refId": "A"
+                }
+              ],
+              "fieldConfig": {
+                "defaults": {
+                  "custom": {
+                    "drawStyle": "line",
+                    "lineWidth": 1,
+                    "fillOpacity": 10,
+                    "showPoints": "auto",
+                    "spanNulls": false,
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": null
+                      }
+                    ]
+                  }
+                },
+                "overrides": []
+              },
+              "options": {
+                "legend": {
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true,
+                  "calcs": []
+                },
+                "tooltip": {
+                  "mode": "single",
+                  "sort": "none"
+                }
+              }
+            }
+          ]
+        }
