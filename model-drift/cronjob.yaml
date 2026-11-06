@@ -1,0 +1,50 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: model-drift
+  namespace: monitoring
+spec:
+  schedule: "*/15 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      template:
+        metadata:
+          labels:
+            app: model-drift
+        spec:
+          serviceAccountName: model-drift
+          restartPolicy: Never
+          containers:
+            - name: model-drift
+              # Same tag as the exporter and the dev inference Deployment. Contains run_once and --serve.
+              image: 899631475351.dkr.ecr.us-east-2.amazonaws.com/ai-inference-service:c881928ea4c07c11f0f4b8c586805a93e881fa79
+              imagePullPolicy: IfNotPresent
+              command: ["python", "-m", "src.jobs.drift"]
+              env:
+                - name: BUCKET
+                  value: ai-cloud-platform-899631475351-dvc
+                - name: AWS_REGION
+                  value: us-east-2
+                - name: MODEL_VERSION
+                  value: fraud-logreg-s42-5f3c0fdb-auc0p848060
+                - name: PROFILE_KEY
+                  value: monitoring/reference/fraud-logreg-s42-5f3c0fdb-auc0p848060/profile.json
+                - name: PREDICTION_PREFIX
+                  value: monitoring/predictions
+                - name: REPORT_PREFIX
+                  value: monitoring/reports
+                - name: MIN_SAMPLES
+                  value: "100"
+                - name: WINDOW_HOURS
+                  value: "24"
+              resources:
+                requests:
+                  cpu: 50m
+                  memory: 128Mi
+                limits:
+                  cpu: 250m
+                  memory: 256Mi
