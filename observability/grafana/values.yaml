@@ -78,7 +78,7 @@ dashboards:
               ],
               "fieldConfig": {
                 "defaults": {
-                  "decimals": 6,
+                  "decimals": 16,
                   "thresholds": {
                     "mode": "absolute",
                     "steps": [
