@@ -15,9 +15,18 @@ metrics:
   path: "/metrics"
   port: "8001"
 
+serviceAccount:
+  create: false
+  name: ""
+  annotations: {}
+
 env:
   LOG_LEVEL: "info"
   MODEL_NAME: "stub-model"
+  AWS_REGION: "us-east-2"
+  PREDICTION_LOG_BUCKET: ""
+  PREDICTION_LOG_PREFIX: "monitoring/predictions"
+  PREDICTION_LOG_SAMPLE_RATE: "1"
 
 # Readable record beside image.tag. CI fills the environment files. The pod does not read these.
 model:

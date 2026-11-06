@@ -18,6 +18,9 @@ spec:
         prometheus.io/path: {{ .Values.metrics.path | quote }}
         prometheus.io/port: {{ .Values.metrics.port | quote }}
     spec:
+      {{- if .Values.serviceAccount.name }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}
+      {{- end }}
       containers:
         - name: ai-inference-service
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -29,6 +32,14 @@ spec:
               value: {{ .Values.env.LOG_LEVEL | quote }}
             - name: MODEL_NAME
               value: {{ .Values.env.MODEL_NAME | quote }}
+            - name: AWS_REGION
+              value: {{ .Values.env.AWS_REGION | default "us-east-2" | quote }}
+            - name: PREDICTION_LOG_BUCKET
+              value: {{ .Values.env.PREDICTION_LOG_BUCKET | default "" | quote }}
+            - name: PREDICTION_LOG_PREFIX
+              value: {{ .Values.env.PREDICTION_LOG_PREFIX | default "monitoring/predictions" | quote }}
+            - name: PREDICTION_LOG_SAMPLE_RATE
+              value: {{ .Values.env.PREDICTION_LOG_SAMPLE_RATE | default "1" | quote }}
           readinessProbe:
             httpGet:
               path: {{ .Values.readinessProbe.path }}
