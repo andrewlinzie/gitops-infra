@@ -1,7 +1,7 @@
 replicaCount: 1
 image:
   repository: 899631475351.dkr.ecr.us-east-2.amazonaws.com/ai-inference-service
-  tag: "1f50a270ee4115571558069389944c11361b1bcb"
+  tag: "c881928ea4c07c11f0f4b8c586805a93e881fa79"
   pullPolicy: IfNotPresent
 service:
   type: ClusterIP
