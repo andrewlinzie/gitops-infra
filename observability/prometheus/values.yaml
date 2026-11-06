@@ -18,3 +18,39 @@ kube-state-metrics:
 
 prometheus-node-exporter:
   enabled: true
+
+serverFiles:
+  alerting_rules.yml:
+    groups:
+      - name: model-quality
+        rules:
+          - alert: ModelFeatureDrift
+            expr: |
+              max by (model_version, feature) (model_feature_psi) > 0.25
+              and on (model_version)
+              max by (model_version) (model_drift_samples_sufficient) == 1
+            for: 15m
+            labels:
+              severity: sev3
+              service: model-drift
+            annotations:
+              summary: "Feature PSI above 0.25 for {{ $labels.feature }}"
+          - alert: ModelScoreDrift
+            expr: |
+              model_score_psi > 0.25
+              and on (model_version)
+              model_drift_samples_sufficient == 1
+            for: 15m
+            labels:
+              severity: sev3
+              service: model-drift
+            annotations:
+              summary: "Score PSI above 0.25"
+          - alert: ModelDriftReportStale
+            expr: model_drift_report_age_seconds > 3600
+            for: 15m
+            labels:
+              severity: sev3
+              service: model-drift
+            annotations:
+              summary: "Drift report is older than one hour"
