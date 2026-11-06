@@ -34,9 +34,9 @@ spec:
             - name: AWS_REGION
               value: us-east-2
             - name: MODEL_VERSION
-              value: fraud-logreg-s42-5f3c0fdb-auc0p848060
+              value: drift-fixture
             - name: PROFILE_KEY
-              value: monitoring/reference/fraud-logreg-s42-5f3c0fdb-auc0p848060/profile.json
+              value: monitoring/reference/drift-fixture/profile.json
             - name: PREDICTION_PREFIX
               value: monitoring/predictions
             - name: REPORT_PREFIX
